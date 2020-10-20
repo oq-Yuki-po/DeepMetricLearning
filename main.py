@@ -2,44 +2,62 @@ import numpy as np
 from tensorflow import keras
 from tensorflow.keras import Input, Model, regularizers
 from tensorflow.keras.datasets import mnist
-from tensorflow.keras.optimizers import SGD, Adam
+from tensorflow.keras.optimizers import SGD
 
+from config import Config
 from layers.arcface import ArcFace
-from vgg import VGG8
+from models.vgg import VGG8
 
-inputs = Input(shape=(28, 28, 1))
-y = Input(shape=(10,))
 
-weight_decay = 1e-4
+def main(is_model_loaded=True):
 
-base_model = VGG8()
+    if is_model_loaded is True:
+        # 入力層の定義
+        # 画像の形
+        inputs = Input(shape=Config.IMAGE_SHAPE)
+        # 分類クラス数
+        y = Input(shape=(Config.NUM_CLASSES,))
 
-base_model_out = base_model(inputs)
+        weight_decay = 1e-4
 
-output = ArcFace(10,
-                 regularizer=regularizers.l2(weight_decay))([base_model_out, y])
+        # 特徴抽出のモデルを構築
+        base_model = VGG8()
+        base_model_out = base_model(inputs)
 
-model = Model([inputs, y], output)
+        # 距離を計測するレイヤー作成
+        output = ArcFace(10,
+                         regularizer=regularizers.l2(weight_decay))([base_model_out, y])
 
-model.compile(loss='categorical_crossentropy',
-              optimizer = SGD(lr=1e-3, momentum=0.5),
-              metrics=['accuracy'])
+        # モデルの構築
+        model = Model([inputs, y], output)
 
-model.summary()
+        # モデルのコンパイル
+        model.compile(loss='categorical_crossentropy',
+                      optimizer=SGD(lr=1e-3, momentum=0.5),
+                      metrics=['accuracy'])
+    else:
+        model = keras.models.load_model('saved_model/arcface')
 
-(X, y), (X_test, y_test) = mnist.load_data()
+    # model.summary()
 
-X = X[:, :, :, np.newaxis].astype('float32') / 255
-X_test = X_test[:, :, :, np.newaxis].astype('float32') / 255
+    # データセットの用意
+    (X, y), (X_test, y_test) = mnist.load_data()
 
-y = keras.utils.to_categorical(y, 10)
-y_test = keras.utils.to_categorical(y_test, 10)
+    # 前処理
+    X = X[:, :, :, np.newaxis].astype('float32') / 255
+    X_test = X_test[:, :, :, np.newaxis].astype('float32') / 255
+    y = keras.utils.to_categorical(y, 10)
+    y_test = keras.utils.to_categorical(y_test, 10)
 
-# model = keras.models.load_model('saved_model/arcface')
+    # 学習
+    model.fit([X, y], y, validation_data=([X_test, y_test], y_test),
+              batch_size=512,
+              epochs=50,
+              verbose=1)
 
-model.fit([X, y], y, validation_data=([X_test, y_test], y_test),
-          batch_size=512,
-          epochs=30,
-          verbose=1)
+    # モデルの保存
+    model.save(Config.MODEL_PATH)
 
-model.save('saved_model/arcface')
+
+if __name__ == '__main__':
+    main()

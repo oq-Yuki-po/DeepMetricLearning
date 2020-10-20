@@ -17,7 +17,7 @@ class VGG8(Model):
         self.vgg_3 = VggBlock(64)
         self.vgg_4 = VggBlock(128)
         self.max_pool = MaxPool2D(pool_size=(2, 2))
-        self.drop_out = Dropout(0.5)
+        self.drop_out = Dropout(0.3)
         self.gap = GlobalAveragePooling2D()
         self.flatten = Flatten()
         self.batch_norm_1 = BatchNormalization()
