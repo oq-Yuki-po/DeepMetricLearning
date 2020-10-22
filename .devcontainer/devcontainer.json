@@ -36,8 +36,7 @@
 		"python.linting.pylintArgs": [
 			"--enable=F,E,C,R",
 			"--disable=E1101,C0111, W0105",
-			"--max-line-length=120",
-			"--ignore=/app/alembic/versions/*.py"
+			"--max-line-length=120"
 		],
 		"python.formatting.autopep8Args": [
 			"--ignore",
@@ -48,6 +47,11 @@
 		"python.testing.unittestEnabled": false,
 		"python.testing.nosetestsEnabled": false,
 		"python.testing.pytestEnabled": true,
+		"python.sortImports.args": [
+			"-rc", 
+			"--atomic",
+			"--settings-path=${workspaceFolder}/.isort.cfg"
+		],
 		"[python]": {
 			"editor.codeActionsOnSave": {
 				"source.organizeImports": true

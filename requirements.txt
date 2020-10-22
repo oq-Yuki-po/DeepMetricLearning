@@ -3,6 +3,7 @@ opencv-python
 numpy
 matplotlib
 pylint
+pytest
 autopep8
 isort
 keras
