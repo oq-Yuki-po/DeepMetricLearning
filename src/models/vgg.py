@@ -1,10 +1,9 @@
+
 from tensorflow import keras
 from tensorflow.keras import Model
-from tensorflow.keras.layers import (BatchNormalization, Dense, Dropout,
-                                     Flatten, GlobalAveragePooling2D,
-                                     MaxPool2D)
+from tensorflow.keras.layers import BatchNormalization, Dense, Dropout, Flatten, GlobalAveragePooling2D, MaxPool2D
 
-from layers.conv import ConvBlock, VggBlock
+from src.layers.conv import VggBlock
 
 
 class VGG8(Model):

@@ -5,8 +5,8 @@ from tensorflow.keras.datasets import mnist
 from tensorflow.keras.optimizers import SGD
 
 from config import Config
-from layers.arcface import ArcFace
-from models.vgg import VGG8
+from src.layers.arcface import ArcFace
+from src.models.vgg import VGG8
 
 
 def main(is_model_loaded=True):
