@@ -5,6 +5,7 @@ from tensorflow.keras.datasets import mnist
 from tensorflow.keras.optimizers import SGD
 
 from config import Config
+from src.callbacks import Histories
 from src.metrics import ArcFace
 from src.models.vgg import VGG8
 
@@ -47,22 +48,21 @@ def main(is_model_loaded=False):
     X = X[:, :, :, np.newaxis].astype('float32') / 255
     X_test = X_test[:, :, :, np.newaxis].astype('float32') / 255
     y = keras.utils.to_categorical(y, 10)
-    y_test = keras.utils.to_categorical(y_test, 10)
+    y_label = keras.utils.to_categorical(y_test, 10)
 
     # callbacks
     cp_callback = keras.callbacks.ModelCheckpoint(filepath=Config.CHECKPOINT_PATH,
                                                   verbose=1,
                                                   save_weights_only=True,
                                                   period=5)
-
+    history = Histories(validation_data=[X_test, y_test])
 
     # 学習
-    model.fit(x=[X, y],
-              y=y,
-              validation_data=([X_test, y_test], y_test),
+    model.fit([X, y], y,
+              validation_data=([X_test, y_label], y_label),
               batch_size=Config.BATCH_SIZE,
               epochs=Config.EPOCH,
-              callbacks=[cp_callback],
+              callbacks=[cp_callback, history],
               verbose=1)
 
     # モデルの保存
