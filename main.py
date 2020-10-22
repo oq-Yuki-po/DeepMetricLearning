@@ -5,13 +5,13 @@ from tensorflow.keras.datasets import mnist
 from tensorflow.keras.optimizers import SGD
 
 from config import Config
-from src.layers.arcface import ArcFace
+from src.metrics import ArcFace
 from src.models.vgg import VGG8
 
 
-def main(is_model_loaded=True):
+def main(is_model_loaded=False):
 
-    if is_model_loaded is True:
+    if is_model_loaded is False:
         # 入力層の定義
         # 画像の形
         inputs = Input(shape=Config.IMAGE_SHAPE)
@@ -25,7 +25,7 @@ def main(is_model_loaded=True):
         base_model_out = base_model(inputs)
 
         # 距離を計測するレイヤー作成
-        output = ArcFace(10,
+        output = ArcFace(n_classes=Config.NUM_CLASSES,
                          regularizer=regularizers.l2(weight_decay))([base_model_out, y])
 
         # モデルの構築
@@ -50,9 +50,11 @@ def main(is_model_loaded=True):
     y_test = keras.utils.to_categorical(y_test, 10)
 
     # 学習
-    model.fit([X, y], y, validation_data=([X_test, y_test], y_test),
-              batch_size=512,
-              epochs=50,
+    model.fit(x=[X, y],
+              y=y,
+              validation_data=([X_test, y_test], y_test),
+              batch_size=Config.BATCH_SIZE,
+              epochs=Config.EPOCH,
               verbose=1)
 
     # モデルの保存
