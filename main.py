@@ -49,12 +49,20 @@ def main(is_model_loaded=False):
     y = keras.utils.to_categorical(y, 10)
     y_test = keras.utils.to_categorical(y_test, 10)
 
+    # callbacks
+    cp_callback = keras.callbacks.ModelCheckpoint(filepath=Config.CHECKPOINT_PATH,
+                                                  verbose=1,
+                                                  save_weights_only=True,
+                                                  period=5)
+
+
     # 学習
     model.fit(x=[X, y],
               y=y,
               validation_data=([X_test, y_test], y_test),
               batch_size=Config.BATCH_SIZE,
               epochs=Config.EPOCH,
+              callbacks=[cp_callback],
               verbose=1)
 
     # モデルの保存
