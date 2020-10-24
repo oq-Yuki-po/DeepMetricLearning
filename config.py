@@ -8,3 +8,4 @@ class Config:
     CHECKPOINT_PATH = 'results/checkpoints/cp-{epoch:04d}.ckpt'
     EMBEDDED_PATH = 'results/embedded'
     HISTORRY_PATH = 'results/history'
+    TEST_RESULT = 'test/result.png'

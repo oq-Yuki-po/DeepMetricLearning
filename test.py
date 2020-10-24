@@ -5,32 +5,33 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
+from config import Config
+from src.data.mnist import load_mnist
+
 
 def main():
     # dataset
-    (X, y), (X_test, y_test) = mnist.load_data()
-
-    X = X[:, :, :, np.newaxis].astype('float32') / 255
-    X_test = X_test[:, :, :, np.newaxis].astype('float32') / 255
+    (_, _), (X_test, _), y_test = load_mnist()
 
     # feature extraction
-    arcface_model = load_model('saved_model/arcface')
-    arcface_model = Model(inputs=arcface_model.input[0], outputs=arcface_model.layers[-3].output)
-    arcface_features = arcface_model.predict(X_test, verbose=1)
-    arcface_features /= np.linalg.norm(arcface_features, axis=1, keepdims=True)
+    model = load_model(Config.MODEL_PATH)
+    model = Model(inputs=model.input[0], outputs=model.layers[-3].output)
+    features = model.predict(X_test, verbose=0)
+    features /= np.linalg.norm(features, axis=1, keepdims=True)
 
     # plot
     fig = plt.figure()
     ax = Axes3D(fig)
     for c in range(len(np.unique(y_test))):
-        ax.plot(arcface_features[y_test == c, 0],
-                arcface_features[y_test == c, 1],
-                arcface_features[y_test == c, 2],
+        ax.plot(features[y_test == c, 0],
+                features[y_test == c, 1],
+                features[y_test == c, 2],
                 '.',
                 alpha=0.5)
-    plt.title('ArcFace')
 
-    plt.savefig('figure.png')
+    plt.title(Config.MODEL_NAME)
+
+    plt.savefig(Config.TEST_RESULT)
 
 
 if __name__ == '__main__':
