@@ -1,11 +1,10 @@
-import numpy as np
 from tensorflow import keras
 from tensorflow.keras import Input, Model, regularizers
-from tensorflow.keras.datasets import mnist
 from tensorflow.keras.optimizers import SGD
 
 from config import Config
 from src.callbacks import Histories
+from src.data.mnist import load_mnist
 from src.metrics import ArcFace
 from src.models.vgg import VGG8
 
@@ -42,13 +41,7 @@ def main(is_model_loaded=False):
     # model.summary()
 
     # データセットの用意
-    (X, y), (X_test, y_test) = mnist.load_data()
-
-    # 前処理
-    X = X[:, :, :, np.newaxis].astype('float32') / 255
-    X_test = X_test[:, :, :, np.newaxis].astype('float32') / 255
-    y = keras.utils.to_categorical(y, 10)
-    y_label = keras.utils.to_categorical(y_test, 10)
+    (X, y_categorical), (X_test, y_test_categorical), y_test = load_mnist()
 
     # callbacks
     cp_callback = keras.callbacks.ModelCheckpoint(filepath=Config.CHECKPOINT_PATH,
@@ -58,8 +51,8 @@ def main(is_model_loaded=False):
     history = Histories(validation_data=[X_test, y_test])
 
     # 学習
-    model.fit([X, y], y,
-              validation_data=([X_test, y_label], y_label),
+    model.fit([X, y_categorical], y_categorical,
+              validation_data=([X_test, y_test_categorical], y_test_categorical),
               batch_size=Config.BATCH_SIZE,
               epochs=Config.EPOCH,
               callbacks=[cp_callback, history],
