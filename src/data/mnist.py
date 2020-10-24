@@ -15,4 +15,4 @@ def load_mnist():
     y_categorical = keras.utils.to_categorical(y, 10)
     y_test_categorical = keras.utils.to_categorical(y_test, 10)
 
-    return (X, y_categorical), (X_test, y_test_categorical), y_test
+    return (X, y_categorical), (X_test, y_test_categorical)

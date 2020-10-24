@@ -1,13 +1,9 @@
-import sys
-
 import keras
 from keras.models import Model
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-from sklearn.metrics import roc_auc_score
 
 from config import Config
+from src.visualize import plot_embedde_space, plot_learning_hitory
 
 
 class Histories(keras.callbacks.Callback):
@@ -24,23 +20,7 @@ class Histories(keras.callbacks.Callback):
 
     def on_train_end(self, logs={}):
 
-        plt.figure(num=1, clear=True)
-        plt.title('accuracy')
-        plt.xlabel('epoch')
-        plt.ylabel('accuracy')
-        plt.plot(self.train_acc, label='train')
-        plt.plot(self.val_acc, label='validation')
-        plt.legend()
-        plt.savefig(f'{Config.HISTORRY_PATH}/accuracy.png')
-
-        plt.figure(num=1, clear=True)
-        plt.title('loss')
-        plt.xlabel('epoch')
-        plt.ylabel('loss')
-        plt.plot(self.train_loss, label='train')
-        plt.plot(self.val_loss, label='validation')
-        plt.legend()
-        plt.savefig(f'{Config.HISTORRY_PATH}/loss.png')
+        plot_learning_hitory(self.train_loss, self.val_loss, self.train_acc, self.val_acc)
 
     def on_epoch_begin(self, epoch, logs={}):
         return
@@ -57,17 +37,7 @@ class Histories(keras.callbacks.Callback):
         features /= np.linalg.norm(features, axis=1, keepdims=True)
 
         # plot
-        fig = plt.figure()
-        ax = Axes3D(fig)
-        for c in range(len(np.unique(self.validation_data[1]))):
-            ax.plot(features[self.validation_data[1] == c, 0],
-                    features[self.validation_data[1] == c, 1],
-                    features[self.validation_data[1] == c, 2],
-                    '.',
-                    alpha=0.5)
-        plt.title('ArcFace')
-
-        plt.savefig(f'{Config.EMBEDDED_PATH}/{epoch}.png')
+        plot_embedde_space(features, self.validation_data[1], f'{Config.EMBEDDED_PATH}/epoch_{epoch+1}.png')
 
         return
 

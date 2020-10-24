@@ -1,3 +1,4 @@
+import numpy as np
 from tensorflow import keras
 from tensorflow.keras import Input, Model, regularizers
 from tensorflow.keras.optimizers import SGD
@@ -36,19 +37,19 @@ def main(is_model_loaded=False):
                       optimizer=SGD(lr=1e-3, momentum=0.5),
                       metrics=['accuracy'])
     else:
-        model = keras.models.load_model('saved_model/arcface')
+        model = keras.models.load_model(Config.MODEL_PATH)
 
     # model.summary()
 
     # データセットの用意
-    (X, y_categorical), (X_test, y_test_categorical), y_test = load_mnist()
+    (X, y_categorical), (X_test, y_test_categorical) = load_mnist()
 
     # callbacks
     cp_callback = keras.callbacks.ModelCheckpoint(filepath=Config.CHECKPOINT_PATH,
                                                   verbose=1,
                                                   save_weights_only=True,
                                                   period=5)
-    history = Histories(validation_data=[X_test, y_test])
+    history = Histories(validation_data=[X_test, np.argmax(y_test_categorical, axis=1)])
 
     # 学習
     model.fit([X, y_categorical], y_categorical,

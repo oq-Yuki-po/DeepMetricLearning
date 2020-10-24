@@ -1,17 +1,14 @@
-import keras
-from keras.datasets import mnist
 from keras.models import Model, load_model
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 from config import Config
 from src.data.mnist import load_mnist
+from src.visualize import plot_embedde_space
 
 
 def main():
     # dataset
-    (_, _), (X_test, _), y_test = load_mnist()
+    (_, _), (X_test, y_test_categorical) = load_mnist()
 
     # feature extraction
     model = load_model(Config.MODEL_PATH)
@@ -20,18 +17,7 @@ def main():
     features /= np.linalg.norm(features, axis=1, keepdims=True)
 
     # plot
-    fig = plt.figure()
-    ax = Axes3D(fig)
-    for c in range(len(np.unique(y_test))):
-        ax.plot(features[y_test == c, 0],
-                features[y_test == c, 1],
-                features[y_test == c, 2],
-                '.',
-                alpha=0.5)
-
-    plt.title(Config.MODEL_NAME)
-
-    plt.savefig(Config.TEST_RESULT)
+    plot_embedde_space(features, np.argmax(y_test_categorical, axis=1), Config.TEST_RESULT)
 
 
 if __name__ == '__main__':
