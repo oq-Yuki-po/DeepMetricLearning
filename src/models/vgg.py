@@ -9,7 +9,7 @@ from src.layers.conv import VggBlock
 class VGG(Model):
 
     def __init__(self):
-        super(VGG8, self).__init__()
+        super(VGG, self).__init__()
         weight_decay = 1e-4
         self.vgg_1 = VggBlock(16)
         self.vgg_2 = VggBlock(32)
