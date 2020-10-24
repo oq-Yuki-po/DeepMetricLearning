@@ -6,7 +6,7 @@ from tensorflow.keras.layers import BatchNormalization, Dense, Dropout, Flatten,
 from src.layers.conv import VggBlock
 
 
-class VGG8(Model):
+class VGG(Model):
 
     def __init__(self):
         super(VGG8, self).__init__()
@@ -23,8 +23,6 @@ class VGG8(Model):
         self.batch_norm_2 = BatchNormalization()
         self.dense_1 = Dense(10, kernel_initializer='he_normal',
                              kernel_regularizer=keras.regularizers.l2(weight_decay))
-        self.dense_2 = Dense(10, activation='softmax',
-                             kernel_regularizer=keras.regularizers.l2(weight_decay))
 
     def call(self, inputs):
         x = self.vgg_1(inputs)
@@ -40,6 +38,5 @@ class VGG8(Model):
         x = self.flatten(x)
         x = self.dense_1(x)
         output = self.batch_norm_2(x)
-        # output = self.dense_2(x)
 
         return output

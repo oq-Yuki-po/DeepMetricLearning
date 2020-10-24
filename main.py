@@ -7,7 +7,7 @@ from config import Config
 from src.callbacks import Histories
 from src.data.mnist import load_mnist
 from src.metrics import ArcFace
-from src.models.vgg import VGG8
+from src.models.vgg import VGG
 
 
 def main(is_model_loaded=False):
@@ -22,7 +22,7 @@ def main(is_model_loaded=False):
         weight_decay = 1e-4
 
         # 特徴抽出のモデルを構築
-        base_model = VGG8()
+        base_model = VGG()
         base_model_out = base_model(inputs)
 
         # 距離を計測するレイヤー作成
