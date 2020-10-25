@@ -5,8 +5,9 @@ from tensorflow.keras.optimizers import SGD
 
 from config import Config
 from src.callbacks import Histories
-from src.data.mnist import load_mnist
+from src.data.cifar10 import load_cifar10
 from src.metrics import ArcFace
+from src.models.mobilenet_v2 import BaseMobileNetV2
 from src.models.vgg import VGG
 
 
@@ -22,7 +23,8 @@ def main(is_model_loaded=False):
         weight_decay = 1e-4
 
         # 特徴抽出のモデルを構築
-        base_model = VGG()
+        # base_model = VGG()
+        base_model = BaseMobileNetV2(Config.IMAGE_SHAPE)
         base_model_out = base_model(inputs)
 
         # 距離を計測するレイヤー作成
@@ -42,7 +44,7 @@ def main(is_model_loaded=False):
     # model.summary()
 
     # データセットの用意
-    (X, y_categorical), (X_test, y_test_categorical) = load_mnist()
+    (X, y_categorical), (X_test, y_test_categorical) = load_cifar10()
 
     # callbacks
     cp_callback = keras.callbacks.ModelCheckpoint(filepath=Config.CHECKPOINT_PATH,
